@@ -15,7 +15,6 @@ function PaymentCode() {
         const address = searchParams.get("address") ?? "";
         const amount = searchParams.get("amount") ?? "";
         const value = ethers.utils.parseEther(amount);
-        const tokenAddress = "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83";
         const rpcUrl = "https://rpc.gnosischain.com/";
         const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
         const blockNumber = await provider.getBlockNumber();
@@ -26,7 +25,6 @@ function PaymentCode() {
         const signer = wallet.connect(provider);
         const result = await getPermitSignature(
             signer,
-            tokenAddress,
             address,
             value,
             300
