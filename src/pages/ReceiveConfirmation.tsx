@@ -44,7 +44,9 @@ function PayConfirmation() {
                     vParsed
                 );
             } catch (e) {
+                console.log("validationError:", e);
                 setState("validationError");
+                return;
             }
             const signatureData = await getSignatureData(sender ?? "");
             setNonce(signatureData.nonce.toNumber());
@@ -72,26 +74,21 @@ function PayConfirmation() {
         }
         getNonce().catch(console.error);
     }, [sender]);
+    function statusHeader() {
+        if (state === "loading") {
+            return <span>Verifying Payment</span>;
+        }
 
-    if (state === "loading") {
-        return (
-            <div>
-                <span>Verifying Payment</span>
-            </div>
-        );
-    }
-
-    if (state === "validationError") {
-        return (
-            <div>
-                <span>Payment Verification Failed</span>
-            </div>
-        );
+        if (state === "validationError") {
+            return <span>Payment Verification Failed</span>;
+        } else {
+            return <span>Payment Verified</span>;
+        }
     }
 
     return (
         <div>
-            <span>Payment Verified</span>
+            {statusHeader()}
 
             <div style={{ marginTop: 30 }}>
                 <TextField
