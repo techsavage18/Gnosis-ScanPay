@@ -1,6 +1,5 @@
 import { useSearchParams } from "react-router-dom";
-import { Button, TextField } from "@mui/material";
-import { Link } from "react-router-dom";
+import { TextField } from "@mui/material";
 
 function PayConfirmation() {
     const [searchParams] = useSearchParams();
