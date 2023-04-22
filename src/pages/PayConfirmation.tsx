@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 function PayConfirmation() {
 
     const [searchParams] = useSearchParams();
-    console.log(searchParams);
     const address = searchParams.get("address");
     const amount = searchParams.get("amount");
 
