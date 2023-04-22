@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Fab, TextField, TextareaAutosize, Grid } from "@mui/material";
+import { Fab, TextareaAutosize, Grid } from "@mui/material";
 import { useSearchParams } from "react-router-dom";
-import { ArrowBack, GetApp } from "@mui/icons-material";
+import { GetApp } from "@mui/icons-material";
 import { ethers } from "ethers";
 import { getPermitSignature } from "../helpers";
 import QRcode from "qrcode.react";
@@ -9,14 +9,11 @@ import QRcode from "qrcode.react";
 function PaymentCode() {
     const [searchParams] = useSearchParams();
     const [qr, setQr] = useState("None");
-    let params = new URLSearchParams(searchParams);
-    console.log(searchParams);
-    console.log("ethers:", ethers);
 
     useEffect(() => {
         async function getQr() {
-        const address = searchParams.get("address");
-        const amount = searchParams.get("amount");
+        const address = searchParams.get("address") ?? "";
+        const amount = searchParams.get("amount") ?? "";
         const value = ethers.utils.parseEther(amount);
         const tokenAddress = "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83";
         const rpcUrl = "https://rpc.gnosischain.com/";
@@ -42,7 +39,7 @@ function PaymentCode() {
     }, [searchParams]);
 
     const downloadQR = () => {
-        const canvas = document.getElementById("myqr");
+        const canvas = document.getElementById("myqr") as any;
         const pngUrl = canvas
             .toDataURL("image/png")
             .replace("image/png", "image/octet-stream");
@@ -80,7 +77,6 @@ function PaymentCode() {
                                     width: 250,
                                     height: 100,
                                 }}
-                                rowsMax={4}
                                 defaultValue={qr}
                                 value={qr}
                             />

@@ -8,7 +8,7 @@ function Pay() {
 
     const [qrscan, setQrscan] = useState('No result');
 
-    const handleResult = (result, error) => {
+    const handleResult = (result: any, error: any) => {
         if (result) {
             setQrscan(result)
             const targetUrl = `/payConfirmation?${result}`;
@@ -29,7 +29,7 @@ function Pay() {
                 <QrReader
                     scanDelay={300}
                     onResult={handleResult}
-                    style={{ height: 240, width: 320 }}
+                    constraints={{ height: 320, width: 320 }}
                 />
             </div>
             </center>

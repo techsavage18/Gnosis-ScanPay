@@ -6,8 +6,6 @@ function PayConfirmation() {
 
     const [searchParams] = useSearchParams();
     console.log(searchParams);
-    let params = new URLSearchParams(searchParams);
-    console.log(searchParams);
     const address = searchParams.get("address");
     const amount = searchParams.get("amount");
 
@@ -20,7 +18,7 @@ function PayConfirmation() {
                     style={{ width: 320 }}
                     value={amount}
                     label="Amount (USD)"
-                    size="large"
+                    size="medium"
                     variant="outlined"
                     color="primary"
                     disabled
@@ -32,7 +30,7 @@ function PayConfirmation() {
                     style={{ width: 320 }}
                     value={address}
                     label="Receiver"
-                    size="large"
+                    size="medium"
                     variant="outlined"
                     color="primary"
                     disabled

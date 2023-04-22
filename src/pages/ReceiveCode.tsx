@@ -1,7 +1,6 @@
-import { useState } from "react";
-import { Fab, TextField, TextareaAutosize, Grid } from "@mui/material";
+import { Fab, TextareaAutosize, Grid } from "@mui/material";
 import { useSearchParams } from 'react-router-dom';
-import { ArrowBack, GetApp } from "@mui/icons-material";
+import { GetApp } from "@mui/icons-material";
 import QRcode from "qrcode.react";
 
 function ReceiveCode() {
@@ -10,7 +9,7 @@ function ReceiveCode() {
     const qr = `${searchParams}`;
 
     const downloadQR = () => {
-        const canvas = document.getElementById("myqr");
+        const canvas = document.getElementById("myqr") as any;
         const pngUrl = canvas
             .toDataURL("image/png")
             .replace("image/png", "image/octet-stream");
@@ -48,7 +47,6 @@ function ReceiveCode() {
                                     width: 250,
                                     height: 100,
                                 }}
-                                rowsMax={4}
                                 defaultValue={qr}
                                 value={qr}
                             />
