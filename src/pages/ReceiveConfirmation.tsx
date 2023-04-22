@@ -59,7 +59,7 @@ function PayConfirmation() {
                 s,
             };
 
-            const permitCallData = getPermitCalldata(
+            const permitCallData = await getPermitCalldata(
                 signatureResult,
                 valueParsed
             );
