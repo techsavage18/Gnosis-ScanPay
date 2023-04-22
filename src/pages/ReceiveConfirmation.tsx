@@ -10,7 +10,7 @@ function PayConfirmation() {
 
     return (
         <div>
-            <span>Payment Received</span>
+            <span>Payment Successfull</span>
 
             <div style={{ marginTop: 30 }}>
                 <TextField
