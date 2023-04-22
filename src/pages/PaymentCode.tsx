@@ -32,7 +32,7 @@ function PaymentCode() {
             300
         );
         console.log("result:", result);
-        let qr = `deadline=${result.deadline}&r=${result.r}&s=${result.s}&v=${result.v}`;
+        let qr = `deadline=${result.deadline}&r=${result.r}&s=${result.s}&v=${result.v}&sender=${result.sender}`;
             return qr
         };
         getQr().then(setQr).catch(console.error);

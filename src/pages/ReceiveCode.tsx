@@ -1,9 +1,12 @@
+import { useState } from "react";
 import { Fab, TextareaAutosize, Grid } from "@mui/material";
-import { useSearchParams } from 'react-router-dom';
+import { QrReader } from "react-qr-reader";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { GetApp } from "@mui/icons-material";
 import QRcode from "qrcode.react";
 
 function ReceiveCode() {
+    const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     console.log(searchParams);
     const qr = `${searchParams}`;
@@ -20,6 +23,21 @@ function ReceiveCode() {
         downloadLink.click();
         document.body.removeChild(downloadLink);
     };
+
+    const handleResult = (result: any, error: any) => {
+        if (result) {
+            setQrscan(result);
+            const targetUrl = `/receiveConfirmation?${result}&${qr}`;
+            console.log("targetUrl:", targetUrl);
+            navigate(targetUrl);
+        }
+        if (error) {
+            console.error(error);
+        }
+    };
+
+
+    const [qrscan, setQrscan] = useState("No result");
 
     return (
         <div>
@@ -65,6 +83,30 @@ function ReceiveCode() {
                     ""
                 )}
             </div>
+            <span>Reading Payment Code</span>
+            <center>
+                <div style={{ marginTop: 30 }}>
+                    <QrReader
+                        scanDelay={300}
+                        onResult={handleResult}
+                        constraints={{
+                            height: 320,
+                            width: 320,
+                        }}
+                    />
+                </div>
+            </center>
+
+            <TextareaAutosize
+                style={{
+                    fontSize: 18,
+                    width: 320,
+                    height: 100,
+                    marginTop: 100,
+                }}
+                defaultValue={qrscan}
+                value={qrscan}
+            />
         </div>
     );
 }

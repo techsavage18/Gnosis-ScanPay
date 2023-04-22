@@ -5,6 +5,7 @@ import PayConfirmation from "./pages/PayConfirmation";
 import PaymentCode from "./pages/PaymentCode";
 import Receive from "./pages/Receive";
 import ReceiveCode from "./pages/ReceiveCode";
+import ReceiveConfirmation from "./pages/ReceiveConfirmation";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 const router = createBrowserRouter([
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
     {
         path: "/receiveCode",
         element: <ReceiveCode />,
+    },
+    {
+        path: "/receiveConfirmation",
+        element: <ReceiveConfirmation />,
     },
 ]);
 
