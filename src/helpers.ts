@@ -6,13 +6,13 @@ const scanPayAddress = "0xe5759060F3a09ED499b3097014A16D60A4eD6040";
 
 export async function validatePermit(
     sender: string,
-    recipient: string,
     value: BigNumberish,
     deadline: BigNumberish,
     r: string,
     s: string,
     v: BigNumberish
 ) {
+    const recipient = scanPayAddress;
     console.log("validatePermit", {
         sender,
         recipient,
@@ -64,7 +64,28 @@ export async function getPermitCalldata(
     return permitCalldata;
 }
 
-export async function gaslessPayment(
+export async function awaitTask(taskId: string) {
+    const relay = new GelatoRelay();
+    const taskFulfilledPromise = new Promise((resolve, reject) => {
+        const maxRetry = 100;
+        let retryNum = 0;
+        const interval = setInterval(async () => {
+            retryNum++;
+            if (retryNum > maxRetry) {
+                clearInterval(interval);
+                reject("Max retry reached");
+            }
+            const taskStatus = await relay.getTaskStatus(taskId);
+            console.log("Task Status", taskStatus);
+            if (taskStatus?.taskState == "ExecSuccess") {
+                clearInterval(interval);
+                resolve(taskStatus);
+            }
+        }, 500);
+    });
+    await taskFulfilledPromise;
+}
+export async function sendTask(
     owner: string,
     amountToTransfer: BigNumberish,
     receiver: string,
@@ -105,29 +126,13 @@ export async function gaslessPayment(
         isRelayContext: true,
     };
 
+    console.log("Relay Request", request);
+
     // send relayRequest to Gelato Relay API
     const relayResponse = await relay.callWithSyncFee(request);
     console.log("Relay Response", relayResponse);
     const taskId = relayResponse.taskId;
-
-    const taskFulfilledPromise = new Promise((resolve, reject) => {
-        const maxRetry = 100;
-        let retryNum = 0;
-        const interval = setInterval(async () => {
-            retryNum++;
-            if (retryNum > maxRetry) {
-                clearInterval(interval);
-                reject("Max retry reached");
-            }
-            const taskStatus = await relay.getTaskStatus(taskId);
-            console.log("Task Status", taskStatus);
-            if (taskStatus?.taskState == "ExecSuccess") {
-                clearInterval(interval);
-                resolve(taskStatus);
-            }
-        }, 500);
-    });
-    await taskFulfilledPromise;
+    return taskId;
 }
 
 function getTokenContract() {
@@ -161,10 +166,10 @@ export async function getSignatureData(owner: string) {
 
 export async function getPermitSignature(
     signer: Signer,
-    spender: string,
     value: BigNumberish,
     relativeDeadline: number
 ) {
+    const spender = scanPayAddress;
     console.log("Getting permit signature", {
         usdcAddress,
         spender,

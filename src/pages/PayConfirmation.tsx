@@ -18,7 +18,6 @@ function PayConfirmation() {
     };
 
     async function generateSignature() {
-        const address = searchParams.get("address") ?? "";
         const amount = searchParams.get("amount") ?? "";
         const value = ethers.utils.parseUnits(amount, 6);
         const rpcUrl = "https://rpc.gnosischain.com/";
@@ -29,12 +28,11 @@ function PayConfirmation() {
 
         const wallet = new ethers.Wallet(privateKey, provider);
         const signer = wallet.connect(provider);
-        const result = await getPermitSignature(signer, address, value, 300);
+        const result = await getPermitSignature(signer, value, 300);
         console.log("result:", result);
         try {
             await validatePermit(
                 result.sender,
-                address,
                 value,
                 result.deadline ?? 0,
                 result.r,

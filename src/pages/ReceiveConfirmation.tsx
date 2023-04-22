@@ -1,11 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { TextField } from "@mui/material";
+import { Button, TextField } from "@mui/material";
 import {
     getPermitCalldata,
     getSignatureData,
-    gaslessPayment,
     validatePermit,
+    sendTask,
+    awaitTask
 } from "../helpers";
 import { ethers } from "ethers";
 
@@ -25,70 +26,78 @@ function PayConfirmation() {
     const s = searchParams.get("s");
     const v = searchParams.get("v");
 
-    useEffect(() => {
-        async function getNonce() {
-            const deadlineParsed = ethers.BigNumber.from(
-                deadline ?? ""
-            ).toNumber();
-            const valueParsed = ethers.utils.parseUnits(amount ?? "", 6);
-            const vParsed = ethers.BigNumber.from(v ?? "").toNumber();
+    async function submitTransaction() {
+        const deadlineParsed = ethers.BigNumber.from(deadline ?? "").toNumber();
+        const valueParsed = ethers.utils.parseUnits(amount ?? "", 6);
+        const vParsed = ethers.BigNumber.from(v ?? "").toNumber();
 
-            try {
-                await validatePermit(
-                    sender ?? "",
-                    recipient ?? "",
-                    valueParsed,
-                    deadlineParsed,
-                    r ?? "",
-                    s ?? "",
-                    vParsed
-                );
-            } catch (e) {
-                console.log("validationError:", e);
-                setState("validationError");
-                return;
-            }
-            const signatureData = await getSignatureData(sender ?? "");
-            setNonce(signatureData.nonce.toNumber());
-            setState("verified");
-            const signatureResult = {
-                deadline: deadlineParsed,
-                sender,
-                v: vParsed,
-                r,
-                s,
-            };
-
-            const permitCallData = await getPermitCalldata(
-                signatureResult,
-                valueParsed
-            );
-            console.log("permitCallData:", permitCallData);
-            const taskResult = await gaslessPayment(
+        try {
+            await validatePermit(
                 sender ?? "",
                 valueParsed,
-                recipient ?? "",
-                permitCallData ?? ""
+                deadlineParsed,
+                r ?? "",
+                s ?? "",
+                vParsed
             );
-            console.log("taskResult:", taskResult);
+        } catch (e) {
+            setState("validationError");
         }
-        getNonce().catch(console.error);
-    }, [sender]);
-    function statusHeader() {
+        const signatureData = await getSignatureData(sender ?? "");
+        setNonce(signatureData.nonce.toNumber());
+        setState("verified");
+        const signatureResult = {
+            deadline: deadlineParsed,
+            sender,
+            v: vParsed,
+            r,
+            s,
+        };
+
+        const permitCallData = await getPermitCalldata(
+            signatureResult,
+            valueParsed
+        );
+        console.log("permitCallData:", permitCallData);
+
+        const taskId = await sendTask(
+            sender ?? "",
+            valueParsed,
+            recipient ?? "",
+            permitCallData ?? ""
+        );
+        console.log("taskId:", taskId);
+
+        const task = await awaitTask(taskId);
+        console.log("taskResult:", task);
+    }
+
+    function stateHeader() {
         if (state === "loading") {
-            return <span>Verifying Payment</span>;
+            return (
+                <div>
+                    <span>Pending Submission</span>
+                </div>
+            );
         }
 
         if (state === "validationError") {
-            return <span>Payment Verification Failed</span>;
-        } else {
-            return <span>Payment Verified</span>;
+            return (
+                <div>
+                    <span>Payment Verification Failed</span>
+                </div>
+            );
         }
+        return (
+            <div>
+                <span>Payment processed</span>
+            </div>
+        );
     }
 
     return (
         <div>
-            {statusHeader()}
+            {stateHeader()}
 
             <div style={{ marginTop: 30 }}>
                 <TextField
@@ -137,6 +146,14 @@ function PayConfirmation() {
                     disabled
                 />
             </div>
+            <Button
+                variant="contained"
+                size="large"
+                color="primary"
+                onClick={submitTransaction}
+            >
+                Submit transaction and claim payment
+            </Button>
         </div>
     );
 }
