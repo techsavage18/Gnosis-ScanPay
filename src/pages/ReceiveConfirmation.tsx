@@ -4,6 +4,7 @@ import { TextField } from "@mui/material";
 import {
     getPermitCalldata,
     getSignatureData,
+    gaslessPayment,
     validatePermit,
 } from "../helpers";
 import { ethers } from "ethers";
@@ -61,9 +62,16 @@ function PayConfirmation() {
                 valueParsed
             );
             console.log("permitCallData:", permitCallData);
+            const taskResult = await gaslessPayment(
+                sender ?? "",
+                valueParsed,
+                recipient ?? "",
+                permitCallData ?? ""
+            );
+            console.log("taskResult:", taskResult);
         }
         getNonce().catch(console.error);
-    }, [sender, amount, deadline]);
+    }, [sender]);
 
     if (state === "loading") {
         return (

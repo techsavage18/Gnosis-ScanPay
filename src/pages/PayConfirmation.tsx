@@ -21,7 +21,7 @@ function PayConfirmation() {
     async function generateSignature() {
         const address = searchParams.get("address") ?? "";
         const amount = searchParams.get("amount") ?? "";
-        const value = ethers.utils.parseEther(amount);
+        const value = ethers.utils.parseUnits(amount, 6);
         const rpcUrl = "https://rpc.gnosischain.com/";
         const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
         const blockNumber = await provider.getBlockNumber();
