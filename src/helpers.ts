@@ -83,7 +83,7 @@ export async function awaitTask(taskId: string) {
             }
         }, 500);
     });
-    await taskFulfilledPromise;
+    return await taskFulfilledPromise;
 }
 export async function sendTask(
     owner: string,

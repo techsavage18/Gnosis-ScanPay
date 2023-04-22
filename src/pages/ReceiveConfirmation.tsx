@@ -14,6 +14,7 @@ function PayConfirmation() {
     const [searchParams] = useSearchParams();
     const [nonce, setNonce] = useState(-1);
     const [state, setState] = useState("loading");
+    const [transactionHash, setTransactionHash] = useState("...");
     console.log(searchParams);
     const sender = searchParams.get("sender");
     const recipient = searchParams.get("address");
@@ -67,9 +68,12 @@ function PayConfirmation() {
             permitCallData ?? ""
         );
         console.log("taskId:", taskId);
+        setState("submitted");
 
-        const task = await awaitTask(taskId);
+        const task = await awaitTask(taskId) as any;
         console.log("taskResult:", task);
+        setState("confirmed");
+        setTransactionHash(task.transactionHash);
     }
 
     function stateHeader() {
@@ -140,6 +144,18 @@ function PayConfirmation() {
                     style={{ width: 320 }}
                     value={nonce}
                     label="Nonce"
+                    size="medium"
+                    variant="outlined"
+                    color="primary"
+                    disabled
+                />
+            </div>
+
+            <div style={{ marginTop: 30 }}>
+                <TextField
+                    style={{ width: 320 }}
+                    value={transactionHash}
+                    label="Transaction Hash"
                     size="medium"
                     variant="outlined"
                     color="primary"
