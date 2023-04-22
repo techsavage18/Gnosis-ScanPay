@@ -141,10 +141,8 @@ function getTokenContract() {
     return usdcContract;
 }
 
-export async function getSignatureData(signer: Signer) {
-    const provider = signer.provider;
+export async function getSignatureData(owner: string) {
     const token = getTokenContract();
-    const owner = await signer.getAddress();
     console.log("getSignatureData Getting Nonce Data", { owner });
     const [nonce, name, version] = await Promise.all([
         token.nonces(owner),
@@ -152,7 +150,7 @@ export async function getSignatureData(signer: Signer) {
         "1",
     ]);
     console.log("getSignatureData Getting chainId");
-    const { chainId } = (await provider?.getNetwork()) ?? { chainId: -1 };
+    const { chainId } = (await token.provider.getNetwork()) ?? { chainId: -1 };
     console.log("getSignatureData Returning: ", {
         nonce,
         name,
