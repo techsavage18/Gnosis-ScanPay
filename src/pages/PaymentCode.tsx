@@ -5,7 +5,7 @@ import QRcode from "qrcode.react";
 
 function PaymentCode() {
     const [searchParams] = useSearchParams();
-    let qr = `deadline=${searchParams.get("deadline")}&r=${searchParams.get("s")}&s=${searchParams.get("s")}&v=${searchParams.get("v")}&sender=${searchParams.get("sender")}`;
+    let qr = `deadline=${searchParams.get("deadline")}&r=${searchParams.get("r")}&s=${searchParams.get("s")}&v=${searchParams.get("v")}&sender=${searchParams.get("sender")}`;
 
 
     const downloadQR = () => {
