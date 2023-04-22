@@ -1,7 +1,11 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { TextField } from "@mui/material";
-import { getSignatureData, validatePermit } from "../helpers";
+import {
+    getPermitCalldata,
+    getSignatureData,
+    validatePermit,
+} from "../helpers";
 import { ethers } from "ethers";
 
 function PayConfirmation() {
@@ -22,26 +26,43 @@ function PayConfirmation() {
 
     useEffect(() => {
         async function getNonce() {
+            const deadlineParsed = ethers.BigNumber.from(
+                deadline ?? ""
+            ).toNumber();
+            const valueParsed = ethers.utils.parseUnits(amount ?? "", 6);
+            const vParsed = ethers.BigNumber.from(v ?? "").toNumber();
+
             try {
                 await validatePermit(
                     sender ?? "",
-                    recipient,
-                    amount ?? "",
-                    deadline ?? "",
+                    recipient ?? "",
+                    valueParsed,
+                    deadlineParsed,
                     r ?? "",
                     s ?? "",
-                    v ?? ""
+                    vParsed
                 );
             } catch (e) {
                 setState("validationError");
             }
             const signatureData = await getSignatureData(sender ?? "");
-            setState("success");
-            return signatureData.nonce.toNumber();
+            setNonce(signatureData.nonce.toNumber());
+            setState("verified");
+            const signatureResult = {
+                deadline: deadlineParsed,
+                sender,
+                v: vParsed,
+                r,
+                s,
+            };
+
+            const permitCallData = getPermitCalldata(
+                signatureResult,
+                valueParsed
+            );
+            console.log("permitCallData:", permitCallData);
         }
-        if (sender) {
-            getNonce().then(setNonce).catch(console.error);
-        }
+        getNonce().catch(console.error);
     }, [sender, amount, deadline]);
 
     if (state === "loading") {

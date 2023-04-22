@@ -1,4 +1,4 @@
-import { BigNumberish, ethers } from "ethers";
+import { BigNumberish, ethers, Signer } from "ethers";
 import { GelatoRelay, CallWithSyncFeeRequest } from "@gelatonetwork/relay-sdk";
 
 const usdcAddress = "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83";
@@ -7,11 +7,11 @@ const scanPayAddress = "0xe5759060F3a09ED499b3097014A16D60A4eD6040";
 export async function validatePermit(
     sender: string,
     recipient: string,
-    value: string,
-    deadline: string,
+    value: BigNumberish,
+    deadline: BigNumberish,
     r: string,
     s: string,
-    v: string,
+    v: BigNumberish
 ) {
     console.log("validatePermit", {
         sender,
@@ -22,16 +22,13 @@ export async function validatePermit(
         r,
         s,
     });
-    const deadlineParsed = ethers.BigNumber.from(deadline).toNumber();
-    const valueParsed = ethers.utils.parseUnits(value, 6);
-    const vParsed = ethers.BigNumber.from(v).toNumber();
     const tokenContract = getTokenContract();
     await tokenContract.callStatic.permit(
         sender,
         recipient,
-        valueParsed,
-        deadlineParsed,
-        vParsed,
+        value,
+        deadline,
+        v,
         r,
         s
     );
@@ -51,7 +48,8 @@ export async function getPermitCalldata(
     permitSignatureResult: any,
     amountToTransfer: BigNumberish
 ) {
-    const usdcContract = getTokenContract()
+    console.log("permitSignatureResult", permitSignatureResult);
+    const usdcContract = getTokenContract();
     const { data: permitCalldata } =
         await usdcContract.populateTransaction.permit(
             permitSignatureResult.sender,
@@ -66,7 +64,6 @@ export async function getPermitCalldata(
     return permitCalldata;
 }
 
-
 export async function gaslessPayment(
     owner: string,
     amountToTransfer: BigNumberish,
@@ -76,7 +73,9 @@ export async function gaslessPayment(
     const provider = getProvider();
     const scanPayContract = new ethers.Contract(
         scanPayAddress,
-        ["function settlePayment(address _token, address _owner, address _receiver, uint256 _amount, bytes calldata _permitCalldata) external"],
+        [
+            "function settlePayment(address _token, address _owner, address _receiver, uint256 _amount, bytes calldata _permitCalldata) external",
+        ],
         provider
     );
     const { data: scanPayCalldata } =
@@ -177,10 +176,7 @@ export async function getPermitSignature(
         .then((block) => block.timestamp + relativeDeadline);
 
     const owner = await signer.getAddress();
-    const { nonce, name, version, chainId } = await getSignatureData(
-        signer,
-        usdcAddress
-    );
+    const { nonce, name, version, chainId } = await getSignatureData(owner);
 
     console.log("signTypedData", {
         owner,
@@ -189,6 +185,7 @@ export async function getPermitSignature(
         nonce,
         deadline,
     });
+    // @ts-ignore
     const typedSignature = await signer._signTypedData(
         {
             name,
@@ -244,4 +241,3 @@ export function getProvider() {
     const rpcUrl = "https://rpc.gnosischain.com/";
     return new ethers.providers.JsonRpcProvider(rpcUrl);
 }
-

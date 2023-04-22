@@ -30,7 +30,7 @@ function PayConfirmation() {
 
         const wallet = new ethers.Wallet(privateKey, provider);
         const signer = wallet.connect(provider);
-        const result = await getPermitSignature(signer, address, value, 300);
+        const result = await getPermitSignature(signer, address, value, 3000);
         console.log("result:", result);
         let qr = `deadline=${result.deadline}&r=${result.r}&s=${result.s}&v=${result.v}&sender=${result.sender}`;
         navigate(`/paymentCode?${qr}`);
