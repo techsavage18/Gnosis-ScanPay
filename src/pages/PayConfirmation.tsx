@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button, TextField } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { ethers } from "ethers";
-import { getPermitSignature } from "../helpers";
+import { getPermitSignature, validatePermit } from "../helpers";
 
 function PayConfirmation() {
     const navigate = useNavigate();
@@ -16,7 +16,6 @@ function PayConfirmation() {
     const handleChangePrivateKey = (event: any) => {
         setPrivateKey(event.target.value);
     };
-
 
     async function generateSignature() {
         const address = searchParams.get("address") ?? "";
@@ -32,8 +31,22 @@ function PayConfirmation() {
         const signer = wallet.connect(provider);
         const result = await getPermitSignature(signer, address, value, 300);
         console.log("result:", result);
-        let qr = `deadline=${result.deadline}&r=${result.r}&s=${result.s}&v=${result.v}&sender=${result.sender}`;
-        navigate(`/paymentCode?${qr}`);
+        try {
+            await validatePermit(
+                result.sender,
+                address,
+                value,
+                result.deadline ?? 0,
+                result.r,
+                result.s,
+                result.v
+            );
+            let qr = `deadline=${result.deadline}&r=${result.r}&s=${result.s}&v=${result.v}&sender=${result.sender}`;
+            navigate(`/paymentCode?${qr}`);
+        } catch (e) {
+            console.log("validationError:", e);
+            return;
+        }
     }
 
     return (
