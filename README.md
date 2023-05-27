@@ -2,7 +2,7 @@
 Gasless ERC20 transactions via QR Code
 
 - [Demo deployment](https://scan-pay.vercel.app/)
-- [Demo Video]([https://www.youtube.com/watch?v=haZYHZtBIb8])
+- [[Demo Video]([https://www.youtube.com/watch?v=haZYHZtBIb8])](https://www.youtube.com/watch?v=haZYHZtBIb8)
 
 
 THIS IS AN UNTESTED DEMO. IT IS PROVIDED AS IS WITHOUT ANY GUARANTEES. DO NOT USE THIS WITH SENSITIVE PRIVATE KEYS / WALLETS.
