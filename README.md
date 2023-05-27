@@ -1,9 +1,8 @@
-# ScanPay - Frontend
+# ScanPay- Gnosis
 Gasless ERC20 transactions via QR Code
 
 - [Demo deployment](https://scan-pay.vercel.app/)
-- [Demo video](https://www.youtube.com/watch?v=dH-khH58O2Y)
-- [Smart Contracts](https://github.com/ckoopmann/ScanPayContracts)
+
 
 THIS IS AN UNTESTED DEMO. IT IS PROVIDED AS IS WITHOUT ANY GUARANTEES. DO NOT USE THIS WITH SENSITIVE PRIVATE KEYS / WALLETS.
 
